@@ -1,0 +1,7 @@
+## Interface: 110000
+## Title: MySpellMacroAddon
+## Author: Clotic
+## Version: 1.0.0
+## Notes: Menu for creating macros with spells
+
+SpellMacroDropDown.lua
