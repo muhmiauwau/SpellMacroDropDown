@@ -3,5 +3,6 @@
 ## Author: Clotic
 ## Version: 1.0.0
 ## Notes: Menu for creating macros with spells
-
+## LoadOnDemand: 1
+## LoadWith: Blizzard_PlayerSpells
 SpellMacroDropDown.lua

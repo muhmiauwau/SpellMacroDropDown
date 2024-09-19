@@ -102,44 +102,27 @@ local function generateMenuItems(spellId)
     return menuItems
 end
 
+local function hookSpellButtons()
+    local pool = PlayerSpellsFrame.SpellBookFrame.PagedSpellsFrame.framePoolCollection
+    for elementFrame in pool:EnumerateActiveByTemplate("SpellBookItemTemplate", "SPELL") do
+        elementFrame.Button:HookScript("OnClick", function()   
+            if not IsControlKeyDown() then return end
+
+            local menuItems = generateMenuItems( elementFrame.spellBookItemInfo.spellID)
+            MenuUtil.CreateContextMenu(elementFrame.Button, function(ownerRegion, rootDescription)
+                rootDescription:CreateTitle("Create Macro")
+                for _, menuItem in ipairs(menuItems) do
+                    rootDescription:CreateButton(menuItem.text, function() menuItem.func() end)
+                end
+            end)
+
+        end)
+    end
+end
 
 local isInitializied = false
-
-local addonFrame = CreateFrame("Frame") -- Renamed from frame to addonFrame
-addonFrame:RegisterEvent("ADDON_LOADED")
-addonFrame:SetScript("OnEvent", function(_, event, addonName)
-    if addonName == "Blizzard_PlayerSpells" then
-        PlayerSpellsFrame:HookScript("OnShow", function()
-            if isInitializied then return end
-            isInitializied = true
-
-            -- -- Create a button to open the Macro UI
-            local macroButton = CreateFrame("Button", nil, PlayerSpellsFrame.SpellBookFrame, "UIPanelButtonTemplate")
-            macroButton:SetSize(100, 22)
-            macroButton:SetText("Macros")
-            macroButton:SetPoint("TOPRIGHT", PlayerSpellsFrame.SpellBookFrame, "TOPRIGHT", -30, -40)
-            macroButton:SetScript("OnClick", function()
-                MacroFrame_LoadUI();
-                ShowUIPanel(MacroFrame);
-            end)
-            macroButton:Show()
-
-            local pool= PlayerSpellsFrame.SpellBookFrame.PagedSpellsFrame.framePoolCollection
-            for elementFrame in pool:EnumerateActiveByTemplate("SpellBookItemTemplate", "SPELL") do
-                elementFrame.Button:HookScript("OnClick", function()   
-                    if not IsControlKeyDown() then return end
-
-                    local menuItems = generateMenuItems( elementFrame.spellBookItemInfo.spellID)
-                    MenuUtil.CreateContextMenu(elementFrame.Button, function(ownerRegion, rootDescription)
-                        rootDescription:CreateTitle("Create Macro")
-                        for _, menuItem in ipairs(menuItems) do
-                            rootDescription:CreateButton(menuItem.text, function() menuItem.func() end)
-                        end
-                    end)
-
-                end)
-            end
-        end)
-
-    end
+PlayerSpellsFrame:HookScript("OnShow", function()
+    if isInitializied then return end
+    isInitializied = true
+    hookSpellButtons()
 end)
